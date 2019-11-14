@@ -8,7 +8,17 @@ from keras.models import Sequential
 from keras.layers import LSTM, Embedding, Dense, TimeDistributed, Dropout, Bidirectional
 from keras_contrib.layers import CRF
 
-dataPath = 'entity-annotated-corpus/ner_dataset.csv'
+def biLSTM(input_dim, output_dim, input_length, units=50):
+    model = Sequential()
+    model.add(Embedding(input_dim=input_dim, output_dim=output_dim, input_length=input_length, mask_zero=True))
+    model.add(Bidirectional(LSTM(units=units, return_sequences=True, recurrent_dropout=0.1)))
+    model.add(TimeDistributed(Dense(units, activation="relu")))
+    crf = CRF(tag_size)
+    model.add(crf)
+
+    return model
+
+dataPath = 'Data/entity-annotated-corpus/ner_dataset.csv'
 
 data = pd.read_csv(dataPath, encoding="latin1")
 
@@ -25,8 +35,6 @@ for tagged_sentence in tagged_sentences: # 47,959개의 문장 샘플을 1개씩
     sentences.append(list(sentence)) # 각 샘플에서 단어 정보만 저장한다.
     ner_tags.append(list(tag_info)) # 각 샘플에서 개체명 태깅 정보만 저장한다.
 
-print('샘플의 최대 길이 : %d' % max(len(l) for l in sentences))
-print('샘플의 평균 길이 : %f' % (sum(map(len, sentences))/len(sentences)))
 
 src_tokenizer = Tokenizer(oov_token='OOV') # 모든 단어를 사용하지만 인덱스 1에는 단어 'OOV'를 할당한다.
 src_tokenizer.fit_on_texts(sentences)
@@ -47,9 +55,7 @@ index_to_ner[0]='PAD'
 
 max_len = 70
 X_train = pad_sequences(X_train, padding='post', maxlen=max_len)
-# X_train의 모든 샘플들의 길이를 맞출 때 뒤의 공간에 숫자 0으로 채움.
 y_train = pad_sequences(y_train, padding='post', maxlen=max_len)
-# y_train의 모든 샘플들의 길이를 맞출 때 뒤의 공간에 숫자0으로 채움.
 
 X_train, X_test, y_train, y_test = train_test_split(X_train, y_train, test_size=.2, random_state=777)
 
@@ -61,13 +67,20 @@ print('훈련 샘플 레이블의 크기 : {}'.format(y_train.shape))
 print('테스트 샘플 문장의 크기 : {}'.format(X_test.shape))
 print('테스트 샘플 레이블의 크기 : {}'.format(y_test.shape))
 
+'''
 model = Sequential()
 model.add(Embedding(input_dim=vocab_size, output_dim=20, input_length=max_len, mask_zero=True))
 model.add(Bidirectional(LSTM(units=50, return_sequences=True, recurrent_dropout=0.1)))
 model.add(TimeDistributed(Dense(50, activation="relu")))
 crf = CRF(tag_size)
 model.add(crf)
+'''
 
+model = biLSTM(input_dim=vocab_size, output_dim=20, input_length=max_len, units=50)
 
 model.compile(optimizer="rmsprop", loss=crf.loss_function, metrics=[crf.accuracy])
 history = model.fit(X_train, y_train, batch_size=32, epochs=5, validation_split=0.1, verbose=1)
+
+print("\n test accuracy: %.4f" % (model.evaluate(X_test, y_test)[1]))
+
+model.save_weights('bi_lstm_crf_weight.h5')
