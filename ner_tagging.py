@@ -157,10 +157,13 @@ def main():
     model.load_weights(model_weights)
 
     #
-    ner_df = pd.dataFrame()
+    ner_df = pd.DataFrame()
     for i in range(df.shape[0]):
-        column = df.iloc[0]
-        body = column[' body']
+        if i % 1000 == 0:
+            print(i, "rows are done")
+
+        row = df.iloc[0]
+        body = row[' body']
         sentence_split = split_into_sentences(body)
 
         ner_dict = ner_extract_from_text(model=model, text=sentence_split, word_to_index=word_to_index)
@@ -176,9 +179,12 @@ def main():
 
     ner_df = ner_df.reset_index(drop=True)
 
+    print("NER tagging process done")
+
     merged_df = pd.merge(df, ner_df)
     merged_df.to_csv("Data/ner_result.csv", mode='w')
 
+    print("saved to csv file.")
 
 if __name__ == "__main__":
     main()
