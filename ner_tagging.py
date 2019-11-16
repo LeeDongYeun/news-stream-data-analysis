@@ -1,5 +1,9 @@
 import numpy as np
+import pandas as pd
 import re
+import os
+import json
+
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from biLSTM import load_data, preprocess_data, tozenizer, biLSTM
 
@@ -121,19 +125,66 @@ def ner_extract_from_text(model, text, word_to_index):
     
     return ner_dict
 
-def ner_tagging(model_weights):
-    dataPath = 'Data/entity-annotated-corpus/ner_dataset.csv'
 
-    data = load_data(dataPath)
-    sentences, ner_tags = preprocess_data(data)
+def main():
+    nerDataPath = 'Data/entity-annotated-corpus/ner_dataset.csv'
+    newsDataPath = 'Data/news/'
+    model_weights = 'bi_lstm_crf_weight.h5'
+
+    datapaths = os.listdir(newsDataPath)
+
+    df = pd.DataFrame()
+
+    for p in datapaths:
+        with open(newsDataPath + p, 'r') as f:
+            data = json.load(f)
+
+        dataframe = pd.DataFrame.from_dict(data)
+        df = df.append(dataframe)
+
+    df = df.reset_index(drop=True)
+    
+    # word_to_index를 얻기 위한 작업
+    nerData = load_data(nerDataPath)
+    sentences, ner_tags = preprocess_data(nerData)
 
     src_tokenizer, _ = tozenizer(sentences, ner_tags)
+    word_to_index = src_tokenizer.word_index
 
+    # bi-LSTM CRF model
     model = biLSTM()
+    print("loading weight to bi-LSTM model...")
     model.load_weights(model_weights)
 
-print("start")
+    #
+    ner_df = pd.dataFrame()
+    for i in range(df.shape[0]):
+        column = df.iloc[0]
+        body = column[' body']
+        sentence_split = split_into_sentences(body)
 
+        ner_dict = ner_extract_from_text(model=model, text=sentence_split, word_to_index=word_to_index)
+
+        val_list = list(ner_dict.values())
+        joined_val_list = []
+        for val in val_list:
+            joined_val = ','.join(val)
+            joined_val_list.append(joined_val)
+
+        ner = pd.DataFrame(data=[joined_val_list], columns=list(ner_dict.keys()))
+        ner_df.append(ner)
+
+    ner_df = ner_df.reset_index(drop=True)
+
+    merged_df = pd.merge(df, ner_df)
+    merged_df.to_csv("Data/ner_result.csv", mode='w')
+
+
+if __name__ == "__main__":
+    main()
+
+
+'''
 text = ['The United States announced retaliatory sanctions on North Korea on Friday in response to the communist nation \'s alleged cyber-attacks on Sony Pictures , warning the actions are just the  " first aspect "  of its response .',
  'President Barack Obama signed an executive order authorizing additional sanctions on North Korean individuals and entities in response to the North \'s  " ongoing provocative , destabilizing , and repressive actions and policies , particularly its destructive and coercive cyber attack on Sony , "  the White House said in a statement .',
  "Three North Korean entities and 10 officials were named in the sanctions , including the Reconnaissance General Bureau , Pyongyang 's primary intelligence organization , accused of arms trading and other activities banned under U.N. resolutions , according to the Treasury Department .",
@@ -175,32 +226,6 @@ model.load_weights(model_weights)
 
 
 print(ner_extract_from_text(model, text, word_to_index))
-
-def main():
-    nerDataPath = 'Data/entity-annotated-corpus/ner_dataset.csv'
-    newsDataPath = 'Data/news/'
-    model_weights = 'bi_lstm_crf_weight.h5'
-
-    datapaths = os.listdir(newsDataPath)
-
-    df = pd.DataFrame()
-
-    for p in datapaths:
-        with open(path + p, 'r') as f:
-            data = json.load(f)
-
-        dataframe = pd.DataFrame.from_dict(data)
-        df = df.append(dataframe)
-    
-
-    nerData = load_data(nerDataPath)
-    sentences, ner_tags = preprocess_data(data)
-
-    src_tokenizer, _ = tozenizer(sentences, ner_tags)
-    word_to_index = src_tokenizer.word_index
-
-    model = biLSTM()
-    print("loading weight to bi-LSTM model...")
-    model.load_weights(model_weights)
+'''
 
 
