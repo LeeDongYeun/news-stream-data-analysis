@@ -159,8 +159,8 @@ def main():
     #
     ner_df = pd.DataFrame()
     for i in range(df.shape[0]):
-        if i % 1000 == 0:
-            print(i, "rows are done")
+        # if i % 1000 == 0:
+        print(i, "rows are done")
 
         row = df.iloc[0]
         body = row[' body']
