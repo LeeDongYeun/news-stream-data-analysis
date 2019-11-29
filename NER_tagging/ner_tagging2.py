@@ -131,7 +131,6 @@ def process_ner(sentence, bio):
     for w, pred in zip(sentence, bio):
         joined.append((w,pred))
     
-#     print(joined)
     i = 0
     ner_list = []
     while i < len(joined):
@@ -161,8 +160,8 @@ def word_index_to_NER_df(ner_df):
     ner_df2 = pd.DataFrame()
 
     for i in range(ner_df.shape[0]):
-        if i % 500 == 0:
-            print(i)
+        # if i % 500 == 0:
+            # print(i)
         
         
         ner_dict = {'Geographical Entity':[], 'Organization':[], 'Person':[], 'Geopolitical Entity':[],
@@ -171,10 +170,8 @@ def word_index_to_NER_df(ner_df):
         row = ner_df.iloc[i]
         
         bio = list(row.iloc[1:71])
-    #     print(bio)
         sentence = row['sentence']
         sentence = ast.literal_eval(sentence)
-    #     print(sentence)
         
         ner_list = process_ner(sentence, bio)
         
@@ -218,7 +215,7 @@ def word_index_to_NER_df(ner_df):
             x = index_df[col]
             x = [k for k in x if k != '']
             x = ','.join(x)
-    #         print(x)
+
             l.append(x)
         data.append(l)
 
