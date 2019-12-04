@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import os
 from seqeval.metrics import precision_score, recall_score, f1_score, classification_report
 from sklearn.model_selection import train_test_split
 
@@ -37,7 +38,8 @@ def sequences_to_tag(sequences, index_to_ner):
 
 def main():
     baseDataPath = '../Data/entity-annotated-corpus/ner_dataset.csv'
-    evaluationeDataPath = '../Data/evaluation_data/rem_tag_2_3.csv'
+    evaluationeDataPaths = '../Data/evaluation_data/'
+    evaluationeDataPath = '../Data/evaluation_data/merge.csv'
     model_weights = 'bi_lstm_crf_weight.h5'
 
     baseData = load_data(baseDataPath)
@@ -49,6 +51,13 @@ def main():
     index_to_ner = tar_tokenizer.index_word
     index_to_ner[0]='PAD'
     
+    '''
+    datapaths = os.listdir(evaluationeDataPaths)
+    data = pd.DataFrame()
+    for p in datapaths:
+        _data = pd.read_csv(evaluationeDataPaths + p)
+        data.append(_data)
+        '''
     data = pd.read_csv(evaluationeDataPath)
     sentences, ner_tags = preprocess_data(data)
 
