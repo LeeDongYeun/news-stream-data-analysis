@@ -26,30 +26,17 @@ def get_cosine_sim(*strs):
     vectors = [t for t in get_vectors(*strs)]
     return cosine_similarity(vectors)
     
+
 def get_vectors(*strs):
     text = [t for t in strs]
     vectorizer = CountVectorizer(text)
     vectorizer.fit(text)
     return vectorizer.transform(text).toarray()
 
+
 def concat(*str):
     return " ".join(str)
 
-text = pd.read_csv("../CSV_Data/preprocessed_data.csv")
-text[' body'] = text[' body'].apply(ast.literal_eval)
-
-temp_frame = pd.DataFrame()
-for i in range(len(text)):
-    if text.iloc[i]["Issue"]==Issuenum:
-        temp_frame = temp_frame.append(text.iloc[i], ignore_index=True)
-        
-text[' time'] = pd.to_datetime(text[' time'])
-text = text.sort_values(by=' time', ascending=True)
-
-temp_frame[' time'] = pd.to_datetime(temp_frame[' time']).dt.date
-temp_frame = temp_frame.sort_values([' time'])
-
-# Make event list
 def make_event_list(df, similarity):
     event_list = []
     visit = [0 for _ in range(len(df))]
@@ -89,8 +76,7 @@ def make_event_list(df, similarity):
             event_list.append(on_event_issue_set)
     return event_list
 
-event_list = make_event_list(temp_frame, 0.5)
-# Make on-issue event list
+
 def make_onissue_event_list(df, event_list, similarity):
     set_list = []
     set_visit = [0 for _ in range(len(event_list))]
@@ -136,14 +122,6 @@ def make_onissue_event_list(df, event_list, similarity):
     return set_list
 
 
-onissue_event_list = make_onissue_event_list(temp_frame, event_list, 0.7)
-
-# Print some titles
-
-df = pd.read_csv("../CSV_Data/related_issue_event.csv")
-df["Event"] = ""
-df.head()
-
 def choose_representative(df, temp_frame, index_list):
     
     max_score = 0
@@ -166,6 +144,33 @@ def choose_representative(df, temp_frame, index_list):
             max_score_sentence_index = index
     return max_score_sentence_index, df[df["Unnamed: 0"]==temp_frame.iloc[max_score_sentence_index]['Doc_num']]['title'], temp_frame.iloc[max_score_sentence_index][' time']
 
+
+text = pd.read_csv("../CSV_Data/preprocessed_data.csv")
+text[' body'] = text[' body'].apply(ast.literal_eval)
+
+temp_frame = pd.DataFrame()
+for i in range(len(text)):
+    if text.iloc[i]["Issue"]==Issuenum:
+        temp_frame = temp_frame.append(text.iloc[i], ignore_index=True)
+        
+text[' time'] = pd.to_datetime(text[' time'])
+text = text.sort_values(by=' time', ascending=True)
+
+temp_frame[' time'] = pd.to_datetime(temp_frame[' time']).dt.date
+temp_frame = temp_frame.sort_values([' time'])
+
+# Make event list
+event_list = make_event_list(temp_frame, 0.5)
+
+# Make on-issue event list
+onissue_event_list = make_onissue_event_list(temp_frame, event_list, 0.7)
+
+# Print some titles
+
+df = pd.read_csv("../CSV_Data/related_issue_event.csv")
+df["Event"] = ""
+df.head()
+
 for j, elem in enumerate(onissue_event_list):
     if len(elem)>=5:
         if j!=0:
@@ -185,7 +190,6 @@ for j, elem in enumerate(onissue_event_list):
                 print()
 
 # Export with tagged event number
-
 for j, elem in enumerate(onissue_event_list):
     for i, ele in enumerate(elem):
         for index in ele:
