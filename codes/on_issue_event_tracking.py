@@ -18,6 +18,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 import ast 
 
+pd.set_option('display.max_colwidth', -1)
 np.random.seed(222)
 
 Issuenum = 1
