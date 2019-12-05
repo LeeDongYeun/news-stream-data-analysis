@@ -123,7 +123,6 @@ def issue_name(df, issue, candidate_topic_list, min_sentence_length):
     corpus = df_issue['clean_title']
     _list = tf_idf_result(corpus)
     
-    test_list = []
     max_title = [([], 0)]
     for j in range(min_sentence_length, 5):
             items = candidate_topic_list[issue][j].items()
@@ -152,14 +151,18 @@ df = df.drop('Unnamed: 0', axis=1)
 df = df.drop('Unnamed: 0.1', axis=1)
 df = df.fillna(-2)
 
+print("Tokenizing the title...")
 df['clean_title'] = pd.DataFrame(df['title'].apply(lambda x: ' '.join(text_process(x))))
 df['clean_title_list'] = pd.DataFrame(df['title'].apply(lambda x: text_process(x)))
 
 top_issues = df['Issue'].value_counts().keys()[:10]
 
+print("Making candidate issue name...")
 candidate_topic_list = make_text_topic_list(df, number_of_topic)
 
+i = 1
 for issue in top_issues:
     issue = int(issue)
     issueName = issue_name(df, issue, candidate_topic_list, 2)
-    print(issue, issueName)
+    print("Rank", i, issueName)
+    i += 1
