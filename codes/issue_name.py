@@ -9,8 +9,6 @@ from nltk.tokenize import MWETokenizer
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
-from gensim import corpora
-import gensim
 import ast
 
 
