@@ -143,6 +143,7 @@ def issue_name(df, issue, candidate_topic_list, min_sentence_length):
     
     return max_title[0][0]
 
+
 number_of_topic = 125
 path = '../Data/2-2 result/related_issue_event.csv'
 df = pd.read_csv(path)
