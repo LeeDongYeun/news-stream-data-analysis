@@ -17,6 +17,8 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 import ast 
+from collections import Counter
+
 
 pd.set_option('display.max_colwidth', -1)
 np.random.seed(222)
@@ -37,6 +39,48 @@ def get_vectors(*strs):
 
 def concat(*str):
     return " ".join(str)
+
+def lemma_NER(ner_list):    
+    punc = '!"#$%&\'()*+,-/:;<=>?@[\\]^_`{|}~'
+    punc += "“”’"
+    ner_list = [word.translate(word.maketrans(punc, " "*len(punc))).strip() for word in ner_list]
+    
+    except_set = ['(yonhap)', 'yonhap', '', 'the', 'i', '000', 'south korea',
+                  'we', 'north korea', 'kim', 'park', 'us', 'yonhap the']
+    ner_list = [x for x in ner_list if x not in except_set]
+    
+    return ner_list
+
+def extractNER(df):
+    person = list(df['Person'])
+    organization = list(df['Organization'])
+    place = list(df['Geographical Entity'])
+
+    person_list = []
+    organization_list = []
+    place_list = []
+
+    for x in person:
+        if type(x) == str:
+            person_list += x.split(',')
+    
+    for x in organization:
+        if type(x) == str:
+            organization_list += x.split(',')
+    
+    for x in place:
+        if type(x) == str:
+            place_list += x.split(',')
+    
+    person_list = lemma_NER(person_list)
+    organization_list = lemma_NER(organization_list)
+    place_list = lemma_NER(place_list)
+
+    person = Counter(person_list).most_common(1)[0][0]
+    organization = Counter(organization_list).most_common(1)[0][0]
+    place = Counter(place_list).most_common(1)[0][0]
+
+    return person, organization, place
 
 def make_event_list(df, similarity):
     event_list = []
@@ -179,8 +223,17 @@ for j, elem in enumerate(onissue_event_list):
         for i, ele in enumerate(elem):
             ele = sorted(ele)
             index, title, time = choose_representative(df, temp_frame, ele)
-            print(title.to_string())
+            print(title.to_string(index=False))
             print(time)
+            pop_frame = pd.DataFrame()
+            for e in ele:
+                real_index = int(temp_frame.iloc[e]['Doc_num'])
+                pop_frame = pop_frame.append(df.iloc[real_index])
+            person, organization, place = extractNER(pop_frame)
+            print("- Person       :", person)
+            print("- Organization :", organization)
+            print("- Place        :", place)
+
 #             for e in ele:
                 # print(temp_frame.iloc[e]['title'] , " ,", temp_frame.iloc[e][' time'])
                 
