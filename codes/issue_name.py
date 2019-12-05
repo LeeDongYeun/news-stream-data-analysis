@@ -143,7 +143,7 @@ def issue_name(df, issue, candidate_topic_list, min_sentence_length):
     
     return max_title[0][0]
 
-
+number_of_topic = 125
 path = '../Data/2-2 result/related_issue_event.csv'
 df = pd.read_csv(path)
 
@@ -156,7 +156,7 @@ df['clean_title_list'] = pd.DataFrame(df['title'].apply(lambda x: text_process(x
 
 top_issues = df['Issue'].value_counts().keys()[:10]
 
-candidate_topic_list = make_text_topic_list(df, 125)
+candidate_topic_list = make_text_topic_list(df, number_of_topic)
 
 for issue in top_issues:
     issue = int(issue)
