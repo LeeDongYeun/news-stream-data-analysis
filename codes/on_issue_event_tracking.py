@@ -23,7 +23,7 @@ from collections import Counter
 pd.set_option('display.max_colwidth', -1)
 np.random.seed(222)
 
-Issuenum = 1
+Issuenum = 78
 
 def get_cosine_sim(*strs): 
     vectors = [t for t in get_vectors(*strs)]
@@ -212,7 +212,7 @@ onissue_event_list = make_onissue_event_list(temp_frame, event_list, 0.7)
 
 # Print some titles
 
-df = pd.read_csv("../CSV_Data/related_issue_event.csv")
+df = pd.read_csv("../CSV_Data/_issue.csv")
 df["Event"] = ""
 df.head()
 
