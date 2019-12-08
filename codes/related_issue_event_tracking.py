@@ -29,7 +29,7 @@ np.random.seed(222)
 
 number_of_topic = 125
 target_issue = 2
-datapath = 'Data/news_issue/rem_issue.csv'
+datapath = '../Data/ner_tagged.csv'
 ssue_list = [0,1,2,3,4,5,6,7,8]
 event_list = [0,1,2,3,4,5]
 
@@ -190,7 +190,7 @@ def find_release_topic(issue_num, num_topic, list_text_topic, tokenized_doc, tit
 
 
 
-topictable = pd.read_csv("../CSV_Data/preprocessed_data.csv")
+topictable = pd.read_csv("../Data/preprocessed_data.csv")
 
 import ast 
 topictable['title'] = topictable['title'].apply(ast.literal_eval)
@@ -226,7 +226,7 @@ csv_data = pd.read_csv("../CSV_Data/_issue.csv")
 
 csv_data['Event'] = event_index['Issue']
 
-csv_data.to_csv("../CSV_Data/related_issue_event.csv")
+csv_data.to_csv("../Data/related_issue_event.csv")
 df_issue = csv_data[csv_data['Issue'] == target_issue]
 
 
