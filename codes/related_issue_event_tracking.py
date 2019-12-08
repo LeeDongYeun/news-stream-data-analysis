@@ -222,7 +222,7 @@ event_index.sort_values('Doc_num', inplace = True)
 event_index = event_index.reset_index()
 
 
-csv_data = pd.read_csv("../CSV_Data/_issue.csv")
+csv_data = pd.read_csv("../Data/_issue.csv")
 
 csv_data['Event'] = event_index['Issue']
 
