@@ -246,7 +246,7 @@ def main():
 
     datapaths = os.listdir(newsDataPath)
     for p in datapaths:
-        tempFileName = 'temp_' + p.split('.')[0] + '.csv'
+        tempFileName = '../Data/temp/temp_' + p.split('.')[0] + '.csv'
         resultFileName = 'NER_' + p.split('.')[0] + '.csv'
         with open(newsDataPath + p, 'r') as f:
             data = json.load(f)
