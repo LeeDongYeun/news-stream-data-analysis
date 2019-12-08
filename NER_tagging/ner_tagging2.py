@@ -226,9 +226,9 @@ def word_index_to_NER_df(ner_df):
 
 
 def main():
-    nerDataPath = 'Data/entity-annotated-corpus/ner_dataset.csv'
-    newsDataPath = 'Data/news/'
-    resultDataPath = 'Data/ner_tagged_news/'
+    nerDataPath = '../Data/entity-annotated-corpus/ner_dataset.csv'
+    newsDataPath = '../Data/news/'
+    resultDataPath = '../Data/ner_tagged_news/'
     model_weights = 'bi_lstm_crf_weight.h5'
 
     # word_to_index를 얻기 위한 작업
@@ -264,6 +264,13 @@ def main():
         df = pd.merge(df, result, how='right')
         df.to_csv(resultDataPath + resultFileName)
         print(resultFileName, "file saved.")
+    
+    datapaths = os.listdir(resultDataPath)
+    concat = pd.DataFrame()
+    for p in datapaths:
+        ner_df = pd.read_csv(datapaths + p)
+        concat = concat.append(ner_df)
+    concat.to_csv('../Data/ner_tagged.csv')
     
     print("Done.")
 

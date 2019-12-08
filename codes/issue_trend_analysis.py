@@ -90,7 +90,7 @@ def make_topictable_per_doc(ldamodel, corpus, texts):
     return(topic_table)
 
 
-path = '../Data/'
+path = '../Data/news/'
 number_of_topic = 125
 
 datapaths = os.listdir(path)
@@ -141,15 +141,15 @@ topictable.columns = ['Doc_num', 'Issue']
 
 
 #Save CSV Data
-csv_data = pd.read_csv("../CSV_Data/ner_tagged.csv")
+csv_data = pd.read_csv("../Data/ner_tagged.csv")
 text = text.reset_index()
 
 text['Doc_num'] = topictable['Doc_num']
 text['Issue'] = topictable['Issue']
 csv_data['Issue'] = topictable['Issue']
 
-text.to_csv("../CSV_Data/preprocessed_data.csv")
-csv_data.to_csv("../CSV_Data/_issue.csv")
+text.to_csv("../Data/preprocessed_data.csv")
+csv_data.to_csv("../Data/_issue.csv")
 
 
 
