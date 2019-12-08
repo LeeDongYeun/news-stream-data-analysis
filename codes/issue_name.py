@@ -132,11 +132,11 @@ def issue_name(df, issue, candidate_topic_list, min_sentence_length):
                 if value >=3 :
                     tf_idf = 0
                     for num in range(len(key)):
-                        if key[num] in ['u.s.', 'u.k.', 'n.k.', 'u.n.','‘comfort','korea‘s','p.m.','govt.']:
+                        if key[num] in ['u.s.', 'u.k.', 'n.k.', 'u.n.','‘comfort','korea‘s','p.m.','govt.', 'say', 'weekender']:
                             tf_idf += 0
                         else:
                             tf_idf += dict(_list)[key[num]]
-                    tf_idf /= len(key)
+                    tf_idf /= len(key) * 0.4 + 1
                     if tf_idf > max_title[0][1]:
                         max_title[0] = (key, tf_idf)
     
@@ -144,7 +144,7 @@ def issue_name(df, issue, candidate_topic_list, min_sentence_length):
 
 
 number_of_topic = 125
-path = '../Data/2-2 result/related_issue_event.csv'
+path = '../Data/_issue.csv'
 df = pd.read_csv(path)
 
 df = df.drop('Unnamed: 0', axis=1)
@@ -156,6 +156,8 @@ df['clean_title'] = pd.DataFrame(df['title'].apply(lambda x: ' '.join(text_proce
 df['clean_title_list'] = pd.DataFrame(df['title'].apply(lambda x: text_process(x)))
 
 top_issues = df['Issue'].value_counts().keys()[:10]
+print(df['Issue'].value_counts()[:10])
+print("Top 10 issues :", top_issues)
 
 print("Making candidate issue name...")
 candidate_topic_list = make_text_topic_list(df, number_of_topic)

@@ -38,7 +38,6 @@ def sequences_to_tag(sequences, index_to_ner):
 
 def main():
     baseDataPath = '../Data/entity-annotated-corpus/ner_dataset.csv'
-    evaluationeDataPaths = '../Data/evaluation_data/'
     evaluationeDataPath = '../Data/evaluation_data/merge.csv'
     model_weights = 'bi_lstm_crf_weight.h5'
 
@@ -47,7 +46,7 @@ def main():
 
     src_tokenizer, tar_tokenizer = tozenizer(base_sentences, base_ner_tags)
     word_to_index = src_tokenizer.word_index
-    tag_size = len(word_to_index) + 1
+    tag_size = len(tar_tokenizer.word_index) + 1
     index_to_ner = tar_tokenizer.index_word
     index_to_ner[0]='PAD'
     
