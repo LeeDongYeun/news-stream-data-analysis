@@ -190,7 +190,7 @@ def choose_representative(df, temp_frame, index_list):
     return max_score_sentence_index, df[df["Unnamed: 0"]==temp_frame.iloc[max_score_sentence_index]['Doc_num']]['title'], temp_frame.iloc[max_score_sentence_index][' time']
 
 
-text = pd.read_csv("../CSV_Data/preprocessed_data.csv")
+text = pd.read_csv("../Data/preprocessed_data.csv")
 text[' body'] = text[' body'].apply(ast.literal_eval)
 
 temp_frame = pd.DataFrame()
@@ -212,7 +212,7 @@ onissue_event_list = make_onissue_event_list(temp_frame, event_list, 0.7)
 
 # Print some titles
 
-df = pd.read_csv("../CSV_Data/_issue.csv")
+df = pd.read_csv("../Data/_issue.csv")
 df["Event"] = ""
 df.head()
 
@@ -249,4 +249,4 @@ for j, elem in enumerate(onissue_event_list):
         for index in ele:
             df.iloc[int(temp_frame.iloc[index]['Doc_num']), df.columns.get_loc("Event")] = j
 
-df.to_csv("../CSV_Data/onissue_event.csv")
+df.to_csv("../Data/on_issue_event.csv")

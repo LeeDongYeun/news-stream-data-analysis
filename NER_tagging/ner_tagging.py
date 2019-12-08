@@ -268,7 +268,7 @@ def main():
     datapaths = os.listdir(resultDataPath)
     concat = pd.DataFrame()
     for p in datapaths:
-        ner_df = pd.read_csv(datapaths + p)
+        ner_df = pd.read_csv(resultDataPath + p)
         concat = concat.append(ner_df)
     concat.to_csv('../Data/ner_tagged.csv')
     
